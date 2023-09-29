@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class DeparmentRepository {
+public class DepartmentRepository {
     private List<Department> departments = new ArrayList<>();
 
     public Department addDepartment(Department department){

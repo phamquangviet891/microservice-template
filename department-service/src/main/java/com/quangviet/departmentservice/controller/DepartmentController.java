@@ -1,14 +1,13 @@
 package com.quangviet.departmentservice.controller;
 
+import com.quangviet.departmentservice.client.EmployeeClient;
 import com.quangviet.departmentservice.model.Department;
-import com.quangviet.departmentservice.repository.DeparmentRepository;
-import org.apache.logging.log4j.spi.LoggerRegistry;
+import com.quangviet.departmentservice.repository.DepartmentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,18 +17,29 @@ public class DepartmentController {
     private static final Logger LOGGER
             = LoggerFactory.getLogger(DepartmentController.class);
     @Autowired
-    private DeparmentRepository repository;
+    private DepartmentRepository repository;
 
+    @Autowired
+    private EmployeeClient employeeClient;
     @PostMapping
     public Department add(@RequestBody Department department){
         LOGGER.info("Department add: {}", department);
         return repository.addDepartment(department);
     }
-
     @GetMapping
-    public List<Department> findAll(){
+    public List<Department> findAll() {
         LOGGER.info("Department find");
         return repository.findAll();
+    }
+    @GetMapping("/with-employees")
+    public List<Department> findAllWithEmployees(){
+        LOGGER.info("Department find");
+        List<Department> departments
+                = repository.findAll();
+        departments.forEach(department ->
+                department.setEmployees(
+                        employeeClient.findByDepartment(department.getId())));
+        return departments;
     }
 
     @GetMapping("/{id}")
